@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: assigame-chop
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.mjs
+    healthCheckPath: /api/health
+    autoDeploy: true
