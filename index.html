@@ -45,18 +45,18 @@
   </div>
   <script>
     const products = [
-      {name:'Enceinte Nomade Sira',category:'electronique',shop:'Tech & Co',price:'45 000 FCFA',rating:'4.7',tone:'tone-d',tag:'Nouveau'},
-      {name:'Casque sans fil Kora',category:'electronique',shop:'Tech & Co',price:'29 500 FCFA',rating:'4.8',tone:'tone-c',tag:'Coup de cœur'},
-      {name:'Robe Wax Baobab',category:'vetement',shop:'Naya Studio',price:'38 000 FCFA',rating:'4.9',tone:'tone-b',tag:'-15%'},
-      {name:'Chemise Lin Horizon',category:'vetement',shop:'Naya Studio',price:'24 000 FCFA',rating:'4.8',tone:'tone-e',tag:''},
-      {name:'Sneakers Dakar Terre',category:'chaussures',shop:'Naya Studio',price:'42 000 FCFA',rating:'4.9',tone:'tone-a',tag:'Best-seller'},
-      {name:'Sandales Cuir Kémi',category:'chaussures',shop:'Les Créations Awa',price:'21 500 FCFA',rating:'4.7',tone:'tone-b',tag:''},
-      {name:'Vase Terre & Soleil',category:'maison',shop:'Maison Kora',price:'18 500 FCFA',rating:'4.9',tone:'tone-a',tag:'Coup de cœur'},
-      {name:'Bougie Santal & Cèdre',category:'maison',shop:'Atelier Kémi',price:'12 500 FCFA',rating:'5.0',tone:'tone-c',tag:''},
-      {name:'Huile Corps Karité',category:'beaute',shop:'Atelier Kémi',price:'9 500 FCFA',rating:'4.9',tone:'tone-e',tag:'Naturel'},
-      {name:'Panier gourmand local',category:'autre',shop:'Maison Sira',price:'22 000 FCFA',rating:'4.9',tone:'tone-e',tag:'Best-seller'},
-      {name:'Sac Nubi en raphia',category:'autre',shop:'Les Créations Awa',price:'32 000 FCFA',rating:'4.8',tone:'tone-b',tag:'-15%'},
-      {name:'Lampe solaire portable',category:'autre',shop:'Tech & Co',price:'16 000 FCFA',rating:'4.6',tone:'tone-d',tag:'Utile'}
+      {name:'Enceinte Nomade Sira',category:'electronique',shop:'Tech & Co',price:'45 000 FCFA',rating:'4.7',tone:'tone-d',tag:'Nouveau',image:'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=700&q=82'},
+      {name:'Casque sans fil Kora',category:'electronique',shop:'Tech & Co',price:'29 500 FCFA',rating:'4.8',tone:'tone-c',tag:'Coup de cœur',image:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=700&q=82'},
+      {name:'Robe Wax Baobab',category:'vetement',shop:'Naya Studio',price:'38 000 FCFA',rating:'4.9',tone:'tone-b',tag:'-15%',image:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=82'},
+      {name:'Chemise Lin Horizon',category:'vetement',shop:'Naya Studio',price:'24 000 FCFA',rating:'4.8',tone:'tone-e',tag:'',image:'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=700&q=82'},
+      {name:'Sneakers Dakar Terre',category:'chaussures',shop:'Naya Studio',price:'42 000 FCFA',rating:'4.9',tone:'tone-a',tag:'Best-seller',image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=82'},
+      {name:'Sandales Cuir Kémi',category:'chaussures',shop:'Les Créations Awa',price:'21 500 FCFA',rating:'4.7',tone:'tone-b',tag:'',image:'https://images.unsplash.com/photo-1562273138-f46be4ebdf33?auto=format&fit=crop&w=700&q=82'},
+      {name:'Vase Terre & Soleil',category:'maison',shop:'Maison Kora',price:'18 500 FCFA',rating:'4.9',tone:'tone-a',tag:'Coup de cœur',image:'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?auto=format&fit=crop&w=700&q=82'},
+      {name:'Bougie Santal & Cèdre',category:'maison',shop:'Atelier Kémi',price:'12 500 FCFA',rating:'5.0',tone:'tone-c',tag:'',image:'https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=700&q=82'},
+      {name:'Huile Corps Karité',category:'beaute',shop:'Atelier Kémi',price:'9 500 FCFA',rating:'4.9',tone:'tone-e',tag:'Naturel',image:'https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?auto=format&fit=crop&w=700&q=82'},
+      {name:'Panier gourmand local',category:'autre',shop:'Maison Sira',price:'22 000 FCFA',rating:'4.9',tone:'tone-e',tag:'Best-seller',image:'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=700&q=82'},
+      {name:'Sac Nubi en raphia',category:'autre',shop:'Les Créations Awa',price:'32 000 FCFA',rating:'4.8',tone:'tone-b',tag:'-15%',image:'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=700&q=82'},
+      {name:'Lampe solaire portable',category:'autre',shop:'Tech & Co',price:'16 000 FCFA',rating:'4.6',tone:'tone-d',tag:'Utile',image:'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=700&q=82'}
     ];
     const productGrid = document.getElementById('products');
     const savedCart = JSON.parse(localStorage.getItem('assigame-cart') || '[]');
@@ -67,7 +67,7 @@
     const saveState = () => { localStorage.setItem('assigame-cart', JSON.stringify(cart)); localStorage.setItem('assigame-orders', JSON.stringify(orders)); localStorage.setItem('assigame-favorites', JSON.stringify([...favorites])); };
     const updateCartCount = () => { document.getElementById('cartCount').textContent = cart.length; };
     const updateFavoriteCount = () => { const favoriteBadge = document.querySelector('.actions .icon-btn .badge'); if (favoriteBadge) favoriteBadge.textContent = favorites.size; };
-    function renderProducts(list=products){ productGrid.innerHTML = list.length ? list.map(p=>`<article class="product"><div class="visual ${p.tone}"><div class="shape"></div>${p.tag?`<span class="tag">${p.tag}</span>`:''}<button class="heart ${favorites.has(p.name)?'active':''}" onclick="toggleFavorite('${p.name}')">♡</button></div><div class="product-info"><div class="product-title">${p.name}</div><div class="shop">${p.shop} · ${p.category}</div><div class="price-row"><span class="price">${p.price}</span><span class="rating">★ ${p.rating}</span></div><button class="primary" style="width:100%;margin-top:12px;padding:9px" onclick="addToCart('${p.name}')">Ajouter au panier</button></div></article>`).join('') : '<p style="grid-column:1/-1;color:var(--muted);padding:20px 0">Aucun article ne correspond à votre recherche.</p>'; }
+    function renderProducts(list=products){ productGrid.innerHTML = list.length ? list.map(p=>`<article class="product"><div class="visual ${p.tone}"><img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'"><div class="shape"></div>${p.tag?`<span class="tag">${p.tag}</span>`:''}<button class="heart ${favorites.has(p.name)?'active':''}" onclick="toggleFavorite('${p.name}')">♡</button></div><div class="product-info"><div class="product-title">${p.name}</div><div class="shop">${p.shop} · ${p.category}</div><div class="price-row"><span class="price">${p.price}</span><span class="rating">★ ${p.rating}</span></div><button class="primary" style="width:100%;margin-top:12px;padding:9px" onclick="addToCart('${p.name}')">Ajouter au panier</button></div></article>`).join('') : '<p style="grid-column:1/-1;color:var(--muted);padding:20px 0">Aucun article ne correspond à votre recherche.</p>'; }
     renderProducts();
     updateCartCount();
     updateFavoriteCount();
