@@ -25,7 +25,21 @@ Le blueprint configure le lancement Node et le health check `/api/health`. Le se
 - Navigation mobile bottom bar et layout responsive desktop/mobile
 - Base PWA via [manifest.webmanifest](manifest.webmanifest)
 - Persistance locale du panier, favoris, abonnement, commandes et boutique via `localStorage`
-- Serveur Node minimal avec `GET /api/health` pour le lancement local
+- Serveur Node avec SQLite natif, `GET /api/health` et `POST /api/orders`
+
+## API commandes
+
+Le panier reste fluide dans `localStorage`, puis la validation envoie une commande au serveur :
+
+```json
+POST /api/orders
+{
+	"customer": { "name": "Acheteur", "email": "client@example.com" },
+	"items": [{ "productId": 1, "quantity": 2 }]
+}
+```
+
+La réponse contient une référence `CMD-...`. La validation est transactionnelle : les articles sont copiés dans `order_items`, les prix historiques sont conservés et le stock est décrémenté uniquement si la quantité est disponible. La base SQLite locale est créée dans `data/assigame-chop.sqlite` et ce fichier runtime est ignoré par Git.
 
 ## Architecture cible production
 
