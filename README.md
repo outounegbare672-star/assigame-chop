@@ -1,90 +1,96 @@
-# ASSIGAME-CHOP
+# BTPLease Pro
 
-MVP web responsive d'une marketplace e-commerce multi-vendeurs, pensee mobile-first pour l'Afrique francophone.
+MVP web mobile-first réunissant l’immobilier et la location de matériel BTP dans un catalogue unique, en XOF. L’application utilise Node.js et SQLite, sans dépendance npm externe.
 
-## Demarrer
+## Lancer l’application
 
-Le MVP se lance sans dependance externe avec `node server.mjs`, puis s'ouvre sur http://localhost:4173. `npm start` est aussi disponible si la politique PowerShell autorise `npm.ps1`.
+Prérequis : Node.js 22.5 ou plus récent (le serveur utilise le module natif `node:sqlite`).
 
-## Deployer gratuitement sur Render
+```sh
+node server.mjs
+```
 
-1. Pousser ce dossier dans un depot GitHub.
-2. Se connecter sur [Render](https://dashboard.render.com) avec GitHub.
-3. Choisir **New +** puis **Blueprint** et selectionner le depot.
-4. Render detecte [render.yaml](render.yaml), puis creer le Web Service `assigame-chop` avec le plan `Free`.
-5. Attendre le build et ouvrir l'URL `https://assigame-chop.onrender.com` affichee par Render.
+Ouvrir ensuite <http://localhost:4173>. Le serveur crée automatiquement `data/assigame-chop.sqlite`, les équipements et les annonces immobilières de démonstration au premier démarrage.
 
-Le blueprint configure le lancement Node et le health check `/api/health`. Le service gratuit peut se mettre en veille apres une periode d'inactivite, ce qui rend le premier chargement plus lent.
+## Fonctionnalités disponibles
 
-## Inclus dans le MVP
+- Catalogue commun pour terrains, logements, locaux commerciaux et matériel BTP.
+- Filtres par secteur, catégorie, recherche textuelle, ville et budget.
+- Filtres immobiliers distincts « À vendre » et « À louer ».
+- Annonces immobilières de démonstration à vendre et à louer, avec photos de bâtiments, villas et terrains, prix, surface et caractéristiques.
+- Photos de démonstration plus adaptées au matériel sur les cartes des 14 annonces BTP, dont les véhicules de chantier (camion benne et camion toupie).
+- Fiche détaillée des biens avec photo, description, caractéristiques et accès direct à la demande de visite/informations.
+- Demande de visite ou d’informations immobilières, enregistrée avec une référence privée de suivi.
+- Demande de location d’engin avec dates, conducteur et livraison en option.
+- Devis BTP calculé côté serveur : tarif × jours, options et caution indicative de 30 %.
+- Détection transactionnelle des périodes qui se chevauchent pour un équipement; les demandes en attente expirent pour la disponibilité après 24 heures.
+- Interface responsive en français, manifest PWA et données SQLite persistantes.
+- Vérification de disponibilité du service avec `GET /api/health`.
 
-- Accueil marketplace avec recherche produit/boutique et filtres de categories
-- Cartes produits, wishlist, notation, badges verification et panier multi-produits
-- Decouverte de boutiques verifiees et premium
-- Modal d'abonnement acheteur avec essai gratuit de 7 jours
-- Navigation mobile bottom bar et layout responsive desktop/mobile
-- Base PWA via [manifest.webmanifest](manifest.webmanifest)
-- Persistance locale du panier, favoris, abonnement, commandes et boutique via `localStorage`
-- Serveur Node avec SQLite natif, `GET /api/health` et `POST /api/orders`
+Les données et photos d’illustration sont des exemples de démonstration, pas des annonces vérifiées. Les photos des annonces sont servies par Pexels et nécessitent une connexion Internet; remplacez-les par des images autorisées du bien ou du matériel réel avant publication.
 
-## API commandes
+## API
 
-Le panier reste fluide dans `localStorage`, puis la validation envoie une commande au serveur :
+### `GET /api/listings`
+
+Paramètres optionnels : `type` (`property` ou `equipment`), `search`, `category`, `city`, `maxPrice`.
+
+```sh
+curl "http://localhost:4173/api/listings?type=property&search=terrain&city=Lom%C3%A9"
+```
+
+Les éléments retournés indiquent leur type et leur unité de prix (`jour`, `mois` ou `le bien`).
+
+### `POST /api/bookings`
+
+Crée une demande de location pour un équipement :
 
 ```json
-POST /api/orders
 {
-	"customer": { "name": "Acheteur", "email": "client@example.com" },
-	"items": [{ "productId": 1, "quantity": 2 }]
+  "equipmentId": 1,
+  "customer": { "name": "Afi Mensah", "email": "afi@example.com" },
+  "startDate": "2026-11-10",
+  "endDate": "2026-11-12",
+  "withDriver": true,
+  "withDelivery": false
 }
 ```
 
-La réponse contient une référence `CMD-...`. La validation est transactionnelle : les articles sont copiés dans `order_items`, les prix historiques sont conservés et le stock est décrémenté uniquement si la quantité est disponible. La base SQLite locale est créée dans `data/assigame-chop.sqlite` et ce fichier runtime est ignoré par Git.
+Les dates sont inclusives. Une demande créée porte le statut `pending` et doit être confirmée par le responsable de l’annonce. La caution est indicative; aucun paiement n’est effectué.
 
-## Architecture cible production
+### `POST /api/property-inquiries`
 
-- **Web** : Next.js App Router, TypeScript, Tailwind CSS, PWA
-- **Mobile** : Flutter, partage des contrats API avec le web
-- **API** : NestJS, REST + WebSockets pour chat et suivi de commande
-- **Donnees** : PostgreSQL avec Prisma, Redis pour panier/session/queues
-- **Fichiers** : S3 ou Cloudinary avec transformations d'images et videos
-- **Auth** : Firebase Auth ou Auth0, OTP SMS, Google, Apple, 2FA vendeur/admin
-- **Paiement** : Stripe pour cartes, CinetPay/FedaPay/Paystack pour Mobile Money
-- **Observabilite** : Sentry, OpenTelemetry, logs structures et alertes metier
+Crée une demande de visite ou d’informations pour une annonce immobilière :
 
-## Modele de donnees principal
-
-```text
-User (id, role, phone, email, status, locale)
-SellerProfile (userId, kycStatus, rating, payoutAccount)
-Store (id, sellerId, slug, name, category, location, verifiedAt)
-Subscription (id, userId, kind, plan, status, trialEndsAt, renewsAt)
-Product (id, storeId, title, media[], price, stock, variants, status)
-Cart (id, buyerId) -> CartItem (productId, quantity)
-Order (id, buyerId, total, paymentStatus, fulfillmentStatus, escrowStatus)
-OrderItem (orderId, productId, sellerId, price, quantity)
-Review (id, authorId, productId, storeId, rating, moderationStatus)
-Dispute (id, orderId, openedBy, status, resolution)
-Coupon (id, code, type, value, startsAt, endsAt, maxUses)
-Notification (id, userId, channel, type, payload, readAt)
+```json
+{
+  "propertyId": 1,
+  "customer": { "name": "Ama Kossi", "email": "ama@example.com" },
+  "inquiryType": "visit",
+  "preferredDate": "2026-11-20",
+  "message": "Je souhaite visiter ce terrain."
+}
 ```
 
-## Regles business critiques
+`inquiryType` vaut `visit` ou `information`; la date et le message sont facultatifs. Une demande ne constitue ni une promesse de vente ni un contrat de location.
 
-1. Un vendeur doit avoir une souscription active pour publier un produit.
-2. Un acheteur peut naviguer et sauvegarder des favoris sans abonnement, mais la commande est bloquee sans abonnement actif.
-3. Le paiement est capture dans un escrow jusqu'a confirmation de livraison ou expiration de la fenetre de reclamation.
-4. Les droits d'acces sont controles cote serveur, jamais uniquement dans l'interface.
-5. Les webhooks de paiement sont idempotents et journalises.
+### Suivre une demande
 
-## Roadmap
+- `GET /api/bookings/LOC-AAAAMMJJ-<référence privée>` pour une demande de matériel BTP.
+- `GET /api/property-inquiries/IMMO-AAAAMMJJ-<référence privée>` pour une demande immobilière.
 
-**V1 production** : comptes, KYC, creation boutique, CRUD produits/media, plans vendeur/acheteur, panier multi-boutiques, checkout Stripe + Mobile Money, commandes, escrow, notifications email/SMS, admin moderation.
+La référence donne accès au récapitulatif de la demande. Gardez-la confidentielle.
 
-**V2** : chat temps reel, avis avances, parrainage, cashback, promos flash, analytics vendeur, recommandations personnalisees, factures PDF, support et litiges.
+### `GET /api/health`
 
-**Lancement** : pilote dans une ville avec 50 boutiques verifiees, acquisition par micro-influenceurs et WhatsApp, commission mesuree par categorie, puis extension regionale apres validation du taux de conversion et de la retention abonnement.
+Retourne l’état de santé du serveur et de SQLite.
 
-## Note
+## Limites du MVP
 
-Cette livraison est un MVP local executable. Le lien public permanent, les paiements, le KYC, l'escrow, les notifications et les roles admin doivent etre branches a un hebergeur, une base de donnees et des fournisseurs externes avant mise en production. Aucune cle secrete ne doit etre ajoutee au code source.
+L’application permet de parcourir les exemples et d’enregistrer des demandes; elle ne fournit pas encore de comptes annonceurs, de publication/modération d’annonces, de vérification juridique des titres, de contrats, de paiements, ni de validation ou de messagerie avec les annonceurs. Vérifiez directement le bien, le prix, les titres, les conditions et l’identité de l’annonceur avant tout engagement.
+
+La spécification détaillée, le schéma cible et la feuille de route figurent dans [BTPLEASE-PRO-SPEC.md](./BTPLEASE-PRO-SPEC.md), [DATABASE-SCHEMA.md](./DATABASE-SCHEMA.md) et [IMPLEMENTATION-ROADMAP.md](./IMPLEMENTATION-ROADMAP.md). Ces documents décrivent une cible produit; toutes les tables du schéma ne sont pas encore utilisées par l’application.
+
+## Déploiement Render
+
+Le dépôt contient un blueprint Render qui démarre `node server.mjs` et surveille `/api/health`. Une instance éphémère/free ne garantit pas la conservation de SQLite après redéploiement ou mise en veille; un stockage persistant ou PostgreSQL est nécessaire avant d’enregistrer de vraies demandes.

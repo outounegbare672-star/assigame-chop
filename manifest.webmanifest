@@ -1,11 +1,11 @@
 {
-  "name": "ASSIGAME-CHOP",
-  "short_name": "ASSIGAME",
-  "description": "Marketplace africaine pour acheter et vendre localement.",
+  "name": "BTPLease Pro",
+  "short_name": "BTPLease",
+  "description": "Location de matériels et engins BTP en Afrique francophone.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f7f8f4",
-  "theme_color": "#176b4d",
+  "background_color": "#f7f8f5",
+  "theme_color": "#17251f",
   "lang": "fr",
   "icons": []
 }
